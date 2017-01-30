@@ -1,21 +1,26 @@
 .site-footer {
-	// General purpose centering and columnn rules
-	.center {
-		max-width: $container__max-width;
-		margin: 0 auto;
-	}
-	.center:after {
-		@include clearfix;
-		@include clearfix-after;
-	}
-	.column-left {
-		float: left;
-		width: 70%;
-		margin-right: 5%;
-	}
-	.column-right {
-		float: right;
-		width: 25%;
+
+	// This only applies to Desktop size screens
+	@media screen and ( min-width: 782px ) {
+		// General purpose centering and columnn rules
+		.center {
+			max-width: $container__max-width;
+			margin: 0 auto;
+		}
+		.center:after {
+			@include clearfix;
+			@include clearfix-after;
+		}
+
+		.column-left {
+			float: left;
+			width: 60%;
+			margin-right: 5%;
+		}
+		.column-right {
+			float: right;
+			width: 35%;
+		}
 	}
 
 	// Widget formatting
