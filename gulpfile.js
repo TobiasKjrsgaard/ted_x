@@ -12,9 +12,10 @@ var plumber = require('gulp-plumber');
 var coffeelint = require('gulp-coffeelint');
 var gulpif = require('gulp-if');
 var argv = require('yargs').argv;
-var livereload = require('gulp-livereload');
+var browserSync = require('browser-sync').create();
 
 var debug = !!(argv.debug); // true if --debug flag is used
+var local_wp = require('./local-wp.json'); // Load local WP dev env
 
 // Project config
 
@@ -60,7 +61,8 @@ gulp.task('styles', function() {
 		cascade: false
 		}))
 	.pipe(gulpif(debug, sourcemaps.write({ sourceRoot: 'src/sass/' })))
-	.pipe(gulp.dest(project.build));
+	.pipe(gulp.dest(project.build))
+	.pipe(browserSync.stream({match: '**/*.css'}));
 	});
 
 // Transpile coffee, minify and provide sourcemaps
@@ -80,7 +82,8 @@ gulp.task('scripts', function() {
 		beautify: false
 		}))
 	.pipe(gulpif(debug, sourcemaps.write()))
-	.pipe(gulp.dest(project.build + 'scripts'));
+	.pipe(gulp.dest(project.build + 'scripts'))
+	.pipe(browserSync.stream({match: '**/*.js'}));
 	});
 
 // Copy templates
@@ -102,26 +105,19 @@ gulp.task('build', function() {
 
 // Rerun the task when a file changes
 gulp.task('watch', function() {
+	browserSync.init({
+		files: ['**/*.php'],
+		proxy: local_wp.devUrl
+	});
 	gulp.watch(project.templates, ['templates']);
 	gulp.watch(project.styles, ['styles']);
 	gulp.watch(project.scripts, ['scripts']);
 	});
 
-// Rerun the task when a file changes
-gulp.task('dev', function() {
-	livereload.listen();
-	gulp.watch([project.styles], ['deploy']);
-	gulp.watch([project.templates], ['deploy']);
-	gulp.watch([project.scripts], ['deploy']);
-	});
-
 // Copy to local WP
 gulp.task('deploy', ['styles', 'scripts', 'templates', 'images'], function() {
-	var local_wp = require('./local-wp.json');
-
 	return gulp.src(project.dist)
 	.pipe(gulp.dest(local_wp.path + project.name))
-	.pipe(livereload());
 	});
 
 // The default task (called when you run `gulp` from cli)
@@ -130,5 +126,6 @@ gulp.task('default', function(){
 	gutil.log('Tasks available:');
 	gutil.log(gutil.colors.green('gulp clean'), 'to clean the project of previous builds');
 	gutil.log(gutil.colors.green('gulp build'), 'to make a complete build for development');
-	gutil.log(gutil.colors.green('gulp dev'), 'to trigger development mode (watch)');
+	gutil.log(gutil.colors.green('gulp watch'), 'to watch for changes and reload with browser-sync');
+  gutil.log(gutil.colors.green('gulp deploy'), 'to make a complete build and save it in deploy folder');
 	});
