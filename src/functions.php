@@ -169,6 +169,7 @@ require get_template_directory() . '/inc/jetpack.php';
 require get_template_directory() . '/inc/widgets.php';
 
 /**
- * Define big thumbnail size for the Team Members page
+ * Define big thumbnail sizes for the Team Members page
  */
-add_image_size( 'custom-team-member-big' , 430, 286, true );
+add_image_size( 'custom-team-member-landscape' , 430, 286, true );
+add_image_size( 'custom-team-member-portrait', 200, 300, true );
